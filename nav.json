@@ -1,0 +1,10 @@
+{
+  "aggiornato": "2026-03-18T00:00:00Z",
+  "fondi": [
+    { "isin": "LU1698605562", "navAtt": 158.60, "errore": false },
+    { "isin": "LU1881760893", "navAtt": 156.25, "errore": false },
+    { "isin": "LU0894903326", "navAtt": 98.10,  "errore": false },
+    { "isin": "LU0115769746", "navAtt": 42.23,  "errore": false },
+    { "isin": "IT0001083424", "navAtt": 17.85,  "errore": false }
+  ]
+}

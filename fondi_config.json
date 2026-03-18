@@ -1,0 +1,39 @@
+{
+  "fondi": [
+    {
+      "idx": 0,
+      "nome": "Lux Im Intermonte PIR Ita SmallMid",
+      "isin": "LU1698605562",
+      "carico": 158.60,
+      "quote": 154.90
+    },
+    {
+      "idx": 1,
+      "nome": "Lux Im Goldman Sachs Global Eq Op",
+      "isin": "LU1881760893",
+      "carico": 156.25,
+      "quote": 165.17
+    },
+    {
+      "idx": 2,
+      "nome": "Lux Im Blackrock Credit Defensive St",
+      "isin": "LU0894903326",
+      "carico": 98.10,
+      "quote": 312.66
+    },
+    {
+      "idx": 3,
+      "nome": "Ff World Fund E Acc Euro",
+      "isin": "LU0115769746",
+      "carico": 42.23,
+      "quote": 567.44
+    },
+    {
+      "idx": 4,
+      "nome": "Eurizon Az.Internaz.Etico",
+      "isin": "IT0001083424",
+      "carico": 17.85,
+      "quote": 3316.86
+    }
+  ]
+}

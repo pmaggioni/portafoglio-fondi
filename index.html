@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Fondi</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Intestazione -->
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="header-title">Portafoglio Fondi</h1>
+      <div class="header-meta">
+        <span id="data-aggiornamento" class="badge-data">--</span>
+        <button class="btn-secondary" onclick="openModalNav()">Aggiorna NAV</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Card riepilogo -->
+    <section class="cards-grid" id="cards-grid">
+      <div class="card">
+        <div class="card-label">Controvalore Totale</div>
+        <div class="card-value" id="card-controvalore">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Costo Storico</div>
+        <div class="card-value" id="card-costo">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">P&L Totale</div>
+        <div class="card-value" id="card-pnl">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Variazione %</div>
+        <div class="card-value" id="card-pct">—</div>
+      </div>
+    </section>
+
+    <!-- Tabella fondi -->
+    <section class="section">
+      <h2 class="section-title">Dettaglio Fondi</h2>
+      <div class="table-wrap">
+        <table class="table" id="tabella-fondi">
+          <thead>
+            <tr>
+              <th>Fondo</th>
+              <th>ISIN</th>
+              <th class="num">Carico</th>
+              <th class="num">NAV Att.</th>
+              <th class="num">Quote</th>
+              <th class="num">Costo Stor.</th>
+              <th class="num">Controvalore</th>
+              <th class="num">P&L</th>
+              <th class="num">Var.%</th>
+              <th class="num">Peso</th>
+              <th class="num">Contributo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-fondi">
+            <tr><td colspan="11" class="loading">Caricamento dati...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Asset class -->
+    <section class="section">
+      <h2 class="section-title">Asset Class</h2>
+      <div class="table-wrap">
+        <table class="table" id="tabella-ac">
+          <thead>
+            <tr>
+              <th>Classe</th>
+              <th class="num">Costo Stor.</th>
+              <th class="num">Controvalore</th>
+              <th class="num">P&L</th>
+              <th class="num">Peso</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-ac">
+            <tr><td colspan="5" class="loading">Caricamento dati...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Grafici -->
+    <section class="section">
+      <h2 class="section-title">Grafici</h2>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Peso Portafoglio</h3>
+          <div class="chart-donut-wrap">
+            <canvas id="chartPeso"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">P&L per Fondo (€)</h3>
+          <canvas id="chartPnl"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Variazione % per Fondo</h3>
+          <canvas id="chartVar"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal aggiorna NAV -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalNav()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Aggiorna NAV</h2>
+        <button class="modal-close" onclick="closeModalNav()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Override manuale dei NAV per questa sessione. Non modifica nav.json.</p>
+        <div id="modal-inputs"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModalNav()">Annulla</button>
+        <button class="btn-primary" onclick="applicaNavManuale()">Applica</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
