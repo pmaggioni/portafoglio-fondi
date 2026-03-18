@@ -327,6 +327,48 @@ function applicaNavManuale() {
 
 
 // ============================================================
+// Refresh manuale NAV (chiamato dal bottone "↻ Aggiorna i valori")
+// Mostra ora del click nel badge e messaggio di conferma
+// ============================================================
+async function refreshNav() {
+  const badgeEl = document.getElementById('data-aggiornamento');
+  badgeEl.textContent = 'Aggiornamento in corso...';
+
+  try {
+    const ts = Date.now();
+    const res = await fetch(`nav.json?v=${ts}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    // Aggiorna navCorrente
+    navCorrente = {};
+    data.fondi.forEach(f => {
+      navCorrente[f.isin] = { navAtt: f.navAtt, errore: f.errore };
+    });
+    aggiornaUI(navCorrente);
+
+    // Badge: ora del click
+    const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    badgeEl.textContent = 'Aggiornato alle ' + ora;
+
+    // Messaggio temporaneo di conferma
+    const msg = document.createElement('span');
+    msg.id = 'refresh-msg';
+    msg.textContent = ' ✓ Dati aggiornati correttamente';
+    msg.style.cssText = 'color:#22c55e;font-size:12px;margin-left:8px;';
+    // Rimuovi eventuale messaggio precedente
+    const old = document.getElementById('refresh-msg');
+    if (old) old.remove();
+    badgeEl.insertAdjacentElement('afterend', msg);
+    setTimeout(() => msg.remove(), 4000);
+
+  } catch (err) {
+    badgeEl.textContent = 'Errore aggiornamento';
+    console.error('refreshNav error:', err);
+  }
+}
+
+// ============================================================
 // Avvio
 // ============================================================
 loadNav();
