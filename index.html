@@ -15,6 +15,7 @@
       <h1 class="header-title">Portafoglio Fondi</h1>
       <div class="header-meta">
         <span id="data-aggiornamento" class="badge-data">--</span>
+        <button class="btn-primary" onclick="openModalAggiornaValori()">Aggiorna i valori</button>
         <button class="btn-secondary" onclick="openModalNav()">Aggiorna NAV</button>
       </div>
     </div>
@@ -113,7 +114,7 @@
 
   </main>
 
-  <!-- Modal aggiorna NAV -->
+  <!-- Modal aggiorna NAV manuale -->
   <div class="modal-overlay" id="modal-overlay" onclick="closeModalNav()">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -127,6 +128,28 @@
       <div class="modal-footer">
         <button class="btn-secondary" onclick="closeModalNav()">Annulla</button>
         <button class="btn-primary" onclick="applicaNavManuale()">Applica</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal aggiorna i valori (GitHub Actions) -->
+  <div class="modal-overlay" id="modal-aggiorna-overlay" onclick="closeModalAggiornaValori()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Aggiorna i valori</h2>
+        <button class="modal-close" onclick="closeModalAggiornaValori()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Avvia lo script fetch_nav.py tramite GitHub Actions per aggiornare i NAV reali da Teleborsa. Inserisci il tuo GitHub Personal Access Token (scope: repo o actions:write).</p>
+        <div class="modal-row">
+          <label>GitHub Token</label>
+          <input type="password" id="gh-token-input" placeholder="ghp_..." autocomplete="off">
+        </div>
+        <div id="aggiorna-status" style="margin-top:10px;font-size:13px;min-height:20px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModalAggiornaValori()">Annulla</button>
+        <button class="btn-primary" id="btn-avvia-workflow" onclick="avviaWorkflow()">Avvia aggiornamento</button>
       </div>
     </div>
   </div>
