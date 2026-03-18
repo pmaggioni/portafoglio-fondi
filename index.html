@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafoglio Fondi — Paolo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --bg2:       #1a1d27;
+    --bg3:       #22263a;
+    --border:    #2e3350;
+    --accent:    #4f8ef7;
+    --green:     #22c55e;
+    --red:       #ef4444;
+    --yellow:    #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --card-r:    8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    min-height: 100vh;
+    padding: 18px;
+    user-select: none;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: .5px; }
+  .header .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s;
+  }
+  .btn:hover { background: #2d3250; }
+  .btn-accent { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn-accent:hover { background: #3a78e0; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .kpi { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--card-r); padding: 14px 16px; }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 700; }
+  .kpi-sub   { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .neu { color: var(--text); }
+
+  .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--card-r); overflow: hidden; margin-bottom: 18px; }
+  .table-title { padding: 12px 16px; font-size: 11px; font-weight: 600; border-bottom: 1px solid var(--border); color: var(--muted); letter-spacing: .4px; text-transform: uppercase; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--bg3);
+    padding: 8px 12px;
+    text-align: right;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  thead th:first-child, thead th:nth-child(2) { text-align: left; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg3); }
+  td { padding: 10px 12px; text-align: right; white-space: nowrap; }
+  td:first-child { text-align: left; max-width: 220px; }
+  td:nth-child(2) { text-align: left; }
+
+  .fondo-name { font-weight: 600; font-size: 13px; }
+  .fondo-isin { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+  .badge-az-it  { background: #1e3a5f; color: #60a5fa; }
+  .badge-az-gl  { background: #1a3a2e; color: #34d399; }
+  .badge-ob     { background: #2e2a1a; color: #fbbf24; }
+  .badge-esg    { background: #2a1a3e; color: #a78bfa; }
+
+  .tfoot-row td { background: var(--bg3); font-weight: 700; font-size: 13px; border-top: 2px solid var(--border); }
+
+  .bar-wrap { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .bar { height: 4px; border-radius: 2px; background: var(--accent); min-width: 2px; }
+
+  .ac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .ac-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--card-r); padding: 14px; }
+  .ac-name  { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .ac-peso  { font-size: 20px; font-weight: 700; color: var(--text); }
+  .ac-ctv   { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .ac-pnl   { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--card-r); padding: 16px; }
+  .chart-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px; }
+  .chart-wrap { position: relative; height: 220px; }
+
+  .footer { text-align: center; font-size: 10px; color: var(--muted); padding-top: 8px; }
+  #ts { color: var(--accent); }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 420px; max-width: 90vw; }
+  .modal h2 { font-size: 15px; margin-bottom: 16px; }
+  .modal-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .modal-label { font-size: 12px; color: var(--muted); flex: 1; }
+  .modal-input { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; width: 120px; text-align: right; font-size: 13px; outline: none; }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-footer { margin-top: 18px; display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>📊 Portafoglio Fondi — Paolo</h1>
+    <div class="sub">Aggiornamento manuale NAV giornaliero · <span id="ts">—</span></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" onclick="openModal()">✏️ Aggiorna NAV</button>
+    <button class="btn btn-accent" onclick="calcAll()">↻ Ricalcola</button>
+  </div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Controvalore Totale</div>
+    <div class="kpi-value neu" id="kpi-ctv">—</div>
+    <div class="kpi-sub">5 fondi</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Costo Storico</div>
+    <div class="kpi-value neu" id="kpi-costo">—</div>
+    <div class="kpi-sub">investito totale</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">P&amp;L Totale</div>
+    <div class="kpi-value" id="kpi-pnl">—</div>
+    <div class="kpi-sub" id="kpi-pnl-pct">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Fondo Migliore</div>
+    <div class="kpi-value pos" id="kpi-best">—</div>
+    <div class="kpi-sub" id="kpi-best-sub">—</div>
+  </div>
+</div>
+
+<!-- TABELLA FONDI -->
+<div class="table-wrap">
+  <div class="table-title">Dettaglio Fondi</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Fondo</th>
+        <th>Classe</th>
+        <th>NAV Carico (€)</th>
+        <th>NAV Attuale (€)</th>
+        <th>N° Quote</th>
+        <th>Costo Storico (€)</th>
+        <th>Controvalore (€)</th>
+        <th>P&amp;L (€)</th>
+        <th>Var. %</th>
+        <th>Peso %</th>
+        <th>Contributo Rendim.</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+    <tfoot><tr class="tfoot-row" id="tfoot"></tr></tfoot>
+  </table>
+</div>
+
+<!-- GRAFICI -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <div class="chart-title">Peso per Fondo (%)</div>
+    <div class="chart-wrap"><canvas id="chartPeso"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">P&amp;L per Fondo (€)</div>
+    <div class="chart-wrap"><canvas id="chartPnl"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Variazione % dal Carico</div>
+    <div class="chart-wrap"><canvas id="chartVar"></canvas></div>
+  </div>
+</div>
+
+<!-- ASSET CLASS -->
+<div class="ac-grid" id="ac-grid"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  I dati NAV dei fondi comuni sono aggiornati una volta al giorno dopo la chiusura dei mercati.
+  Modifica il NAV Attuale per ricalcolare P&amp;L e variazioni. · <span id="ts2">—</span>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>✏️ Aggiorna NAV giornaliero</h2>
+    <div id="modal-fields"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-accent" onclick="saveModal()">Salva e ricalcola</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// DATI PORTAFOGLIO
+// =====================================================================
+const FONDI = [
+  {
+    nome:   "Lux Im Intermonte PIR Ita SmallMid",
+    classe: "Azionario Italia",
+    badge:  "badge-az-it",
+    carico: 158.60,   // prezzo medio di acquisto (NAV al momento dell'acquisto)
+    quote:  154.90,   // numero di quote detenute
+    navAtt: 144.62,   // NAV attuale - aggiornabile manualmente
+  },
+  {
+    nome:   "Lux Im Goldman Sachs Global Eq Op",
+    classe: "Azionario Globale",
+    badge:  "badge-az-gl",
+    carico: 156.25,
+    quote:  165.17,
+    navAtt: 179.41,
+  },
+  {
+    nome:   "Lux Im Blackrock Credit Defensive St",
+    classe: "Obbligazionario",
+    badge:  "badge-ob",
+    carico: 98.10,
+    quote:  312.66,
+    navAtt: 104.14,
+  },
+  {
+    nome:   "Ff World Fund E Acc Euro",
+    classe: "Azionario Globale",
+    badge:  "badge-az-gl",
+    carico: 42.23,
+    quote:  567.44,
+    navAtt: 53.12,
+  },
+  {
+    nome:   "Eurizon Az.Internaz.Etico",
+    classe: "Azionario Intl ESG",
+    badge:  "badge-esg",
+    carico: 17.85,
+    quote:  3316.86,
+    navAtt: 21.99,
+  },
+];
+
+// Definizione raggruppamenti per asset class
+const AC_DEF = [
+  { nome: "Azionario Italia",   idxs: [0] },
+  { nome: "Azionario Globale",  idxs: [1, 3] },
+  { nome: "Obbligazionario",    idxs: [2] },
+  { nome: "Azionario Intl ESG", idxs: [4] },
+];
+
+// =====================================================================
+// FORMATTAZIONE
+// =====================================================================
+const fmtEur = v => v.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const fmtPct = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+const fmtNum = v => v.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const cls    = v => v >= 0 ? 'pos' : 'neg';
+const arrow  = v => v >= 0 ? '▲' : '▼';
+
+// Nomi brevi per le label dei grafici
+const shortName = f => f.nome.replace('Lux Im ', '').replace(' St', '').split(' ').slice(0, 3).join(' ');
+
+// =====================================================================
+// CALCOLI — definita PRIMA dell'init grafici per evitare blocchi su
+// errori Chart.js (es. CDN non raggiungibile)
+// =====================================================================
+function calcAll() {
+  const totCtv   = FONDI.reduce((s, f) => s + f.navAtt * f.quote, 0);
+  const totCosto = FONDI.reduce((s, f) => s + f.carico * f.quote, 0);
+  const totPnl   = totCtv - totCosto;
+  const totVar   = totPnl / totCosto;
+
+  // --- KPI cards ---
+  document.getElementById('kpi-ctv').textContent  = fmtEur(totCtv);
+  document.getElementById('kpi-costo').textContent = fmtEur(totCosto);
+
+  const pnlEl = document.getElementById('kpi-pnl');
+  pnlEl.textContent = fmtEur(totPnl);
+  pnlEl.className   = 'kpi-value ' + cls(totPnl);
+  document.getElementById('kpi-pnl-pct').textContent = arrow(totVar) + ' ' + fmtPct(totVar);
+
+  // Fondo con rendimento percentuale più alto dal carico
+  const best = FONDI.reduce((b, f) => {
+    const v = (f.navAtt - f.carico) / f.carico;
+    return v > (b.navAtt - b.carico) / b.carico ? f : b;
+  });
+  document.getElementById('kpi-best').textContent     = best.nome.split(' ').slice(-2).join(' ');
+  document.getElementById('kpi-best-sub').textContent = fmtPct((best.navAtt - best.carico) / best.carico);
+
+  // --- Tabella dettaglio ---
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  FONDI.forEach(f => {
+    const ctv        = f.navAtt * f.quote;
+    const costo      = f.carico * f.quote;
+    const pnl        = ctv - costo;
+    const var_       = (f.navAtt - f.carico) / f.carico;
+    const peso       = ctv / totCtv;
+    const barW       = Math.round(peso * 80);
+    const contributo = pnl / totCosto;  // contributo al rendimento totale sul costo storico
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="fondo-name">${f.nome}</div>
+        <div class="fondo-isin">${f.classe}</div>
+      </td>
+      <td><span class="badge ${f.badge}">${f.classe}</span></td>
+      <td>${fmtNum(f.carico)}</td>
+      <td style="color:var(--accent)">${fmtNum(f.navAtt)}</td>
+      <td>${fmtNum(f.quote)}</td>
+      <td>${fmtEur(costo)}</td>
+      <td style="font-weight:600">${fmtEur(ctv)}</td>
+      <td class="${cls(pnl)}" style="font-weight:600">${arrow(pnl)} ${fmtEur(pnl)}</td>
+      <td class="${cls(var_)}" style="font-weight:700">${fmtPct(var_)}</td>
+      <td>
+        <div class="bar-wrap">
+          <span style="color:var(--muted);font-size:11px">${(peso * 100).toFixed(1)}%</span>
+          <div class="bar" style="width:${barW}px"></div>
+        </div>
+      </td>
+      <td class="${cls(contributo)}" style="font-weight:600">${contributo >= 0 ? '+' : ''}${(contributo * 100).toFixed(2)}%</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // --- Footer tabella (riga totali) ---
+  document.getElementById('tfoot').innerHTML = `
+    <td>TOTALE</td><td></td><td></td><td></td><td></td>
+    <td>${fmtEur(totCosto)}</td>
+    <td>${fmtEur(totCtv)}</td>
+    <td class="${cls(totPnl)}">${arrow(totPnl)} ${fmtEur(totPnl)}</td>
+    <td class="${cls(totVar)}">${fmtPct(totVar)}</td>
+    <td>100%</td>
+    <td class="${cls(totVar)}">${totVar >= 0 ? '+' : ''}${(totVar * 100).toFixed(2)}%</td>`;
+
+  // --- Asset class cards ---
+  const acGrid = document.getElementById('ac-grid');
+  acGrid.innerHTML = '';
+  AC_DEF.forEach(ac => {
+    const ctv_ac   = ac.idxs.reduce((s, i) => s + FONDI[i].navAtt * FONDI[i].quote, 0);
+    const costo_ac = ac.idxs.reduce((s, i) => s + FONDI[i].carico * FONDI[i].quote, 0);
+    const pnl_ac   = ctv_ac - costo_ac;
+    const peso_ac  = ctv_ac / totCtv;
+    const div = document.createElement('div');
+    div.className = 'ac-card';
+    div.innerHTML = `
+      <div class="ac-name">${ac.nome}</div>
+      <div class="ac-peso">${(peso_ac * 100).toFixed(1)}%</div>
+      <div class="ac-ctv">${fmtEur(ctv_ac)}</div>
+      <div class="ac-pnl ${cls(pnl_ac)}">${arrow(pnl_ac)} ${fmtEur(pnl_ac)}</div>`;
+    acGrid.appendChild(div);
+  });
+
+  // --- Aggiorna grafici (solo se Chart.js è caricato correttamente) ---
+  updateCharts(totCtv);
+
+  // --- Timestamp ---
+  const now = new Date().toLocaleString('it-IT');
+  document.getElementById('ts').textContent  = now;
+  document.getElementById('ts2').textContent = 'Ultimo calcolo: ' + now;
+}
+
+// =====================================================================
+// GRAFICI — inizializzati dopo calcAll per non bloccare il resto
+// se Chart.js non è disponibile (CDN down, offline, ecc.)
+// =====================================================================
+const PALETTE = ['#4f8ef7', '#22c55e', '#f59e0b', '#a78bfa', '#ef4444'];
+
+let chartPeso = null;
+let chartPnl  = null;
+let chartVar  = null;
+
+function initCharts() {
+  // Guard: se Chart.js non è caricato, i grafici non si creano ma il resto funziona
+  if (typeof Chart === 'undefined') {
+    console.warn('Chart.js non disponibile — grafici disabilitati');
+    return;
+  }
+
+  const CHART_DEFAULTS = {
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  // Donut: peso per fondo
+  chartPeso = new Chart(document.getElementById('chartPeso').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: FONDI.map(shortName),
+      datasets: [{
+        data: [],
+        backgroundColor: PALETTE,
+        borderColor: '#1a1d27',
+        borderWidth: 2,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          display: true,
+          position: 'right',
+          labels: { color: '#94a3b8', font: { size: 10, family: 'Segoe UI' }, boxWidth: 10, padding: 8 }
+        },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}%` } }
+      }
+    }
+  });
+
+  // Barre orizzontali: P&L per fondo
+  chartPnl = new Chart(document.getElementById('chartPnl').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: FONDI.map(shortName),
+      datasets: [{ data: [], backgroundColor: [], borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      indexAxis: 'y',
+      scales: {
+        x: {
+          grid: { color: '#2e3350' },
+          ticks: {
+            color: '#64748b', font: { size: 10 },
+            callback: v => (v >= 0 ? '+' : '') + v.toLocaleString('it-IT', { minimumFractionDigits: 0 }) + ' €'
+          }
+        },
+        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` P&L: ${ctx.parsed.x >= 0 ? '+' : ''}${ctx.parsed.x.toLocaleString('it-IT', { minimumFractionDigits: 2 })} €` } }
+      }
+    }
+  });
+
+  // Barre orizzontali: variazione % dal carico
+  chartVar = new Chart(document.getElementById('chartVar').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: FONDI.map(shortName),
+      datasets: [{ data: [], backgroundColor: [], borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      indexAxis: 'y',
+      scales: {
+        x: {
+          grid: { color: '#2e3350' },
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%' }
+        },
+        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` Var: ${ctx.parsed.x >= 0 ? '+' : ''}${ctx.parsed.x.toFixed(2)}%` } }
+      }
+    }
+  });
+}
+
+function updateCharts(totCtv) {
+  // Se i grafici non sono stati creati (Chart.js assente) — skip silenzioso
+  if (!chartPeso || !chartPnl || !chartVar) return;
+
+  const pesi = FONDI.map(f => parseFloat(((f.navAtt * f.quote / totCtv) * 100).toFixed(2)));
+  const pnls = FONDI.map(f => parseFloat((f.navAtt * f.quote - f.carico * f.quote).toFixed(2)));
+  const vars = FONDI.map(f => parseFloat(((f.navAtt - f.carico) / f.carico * 100).toFixed(4)));
+
+  chartPeso.data.datasets[0].data = pesi;
+  chartPeso.update('none');
+
+  chartPnl.data.datasets[0].data            = pnls;
+  chartPnl.data.datasets[0].backgroundColor = pnls.map(v => v >= 0 ? '#22c55e' : '#ef4444');
+  chartPnl.update('none');
+
+  chartVar.data.datasets[0].data            = vars;
+  chartVar.data.datasets[0].backgroundColor = vars.map(v => v >= 0 ? '#22c55e' : '#ef4444');
+  chartVar.update('none');
+}
+
+// =====================================================================
+// MODAL aggiornamento NAV
+// =====================================================================
+function openModal() {
+  const container = document.getElementById('modal-fields');
+  container.innerHTML = '';
+  FONDI.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'modal-row';
+    row.innerHTML = `
+      <div class="modal-label">${f.nome.split(' ').slice(0, 4).join(' ')}</div>
+      <input class="modal-input" type="number" step="0.0001" id="nav-modal-${i}" value="${f.navAtt}">`;
+    container.appendChild(row);
+  });
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function saveModal() {
+  FONDI.forEach((f, i) => {
+    const val = parseFloat(document.getElementById(`nav-modal-${i}`).value);
+    if (!isNaN(val) && val > 0) f.navAtt = val;
+  });
+  closeModal();
+  calcAll();
+}
+
+// Chiudi modal cliccando fuori dalla finestra
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// =====================================================================
+// INIT — prima i grafici, poi il calcolo iniziale
+// =====================================================================
+initCharts();  // crea le istanze Chart.js
+calcAll();     // popola tutto con i dati iniziali
+</script>
+</body>
+</html>
