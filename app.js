@@ -327,65 +327,6 @@ function applicaNavManuale() {
 
 
 // ============================================================
-// Modal "Aggiorna i valori" (trigger GitHub Actions workflow)
-// ============================================================
-function openModalAggiornaValori() {
-  document.getElementById('aggiorna-status').textContent = '';
-  document.getElementById('gh-token-input').value = '';
-  document.getElementById('btn-avvia-workflow').disabled = false;
-  document.getElementById('modal-aggiorna-overlay').classList.add('open');
-}
-
-function closeModalAggiornaValori() {
-  document.getElementById('modal-aggiorna-overlay').classList.remove('open');
-}
-
-async function avviaWorkflow() {
-  const token = document.getElementById('gh-token-input').value.trim();
-  const statusEl = document.getElementById('aggiorna-status');
-  const btn = document.getElementById('btn-avvia-workflow');
-
-  if (!token) {
-    statusEl.style.color = '#ef4444';
-    statusEl.textContent = 'Inserisci un GitHub Personal Access Token.';
-    return;
-  }
-
-  btn.disabled = true;
-  statusEl.style.color = '#8892a4';
-  statusEl.textContent = '⏳ Avvio workflow in corso...';
-
-  try {
-    const res = await fetch(
-      'https://api.github.com/repos/pmaggioni/portafoglio-fondi/actions/workflows/update_nav.yml/dispatches',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ref: 'main' }),
-      }
-    );
-
-    if (res.status === 204) {
-      statusEl.style.color = '#22c55e';
-      statusEl.textContent = '✅ Workflow avviato! Attendi 1-2 minuti e ricarica la pagina per vedere i valori aggiornati.';
-    } else {
-      const errData = await res.json().catch(() => ({}));
-      statusEl.style.color = '#ef4444';
-      statusEl.textContent = '❌ Errore ' + res.status + ': ' + (errData.message || 'Token non valido o permessi insufficienti.');
-      btn.disabled = false;
-    }
-  } catch (err) {
-    statusEl.style.color = '#ef4444';
-    statusEl.textContent = '❌ Errore di rete: ' + err.message;
-    btn.disabled = false;
-  }
-}
-
-// ============================================================
 // Avvio
 // ============================================================
 loadNav();
