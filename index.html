@@ -15,9 +15,8 @@
       <h1 class="header-title">Portafoglio Fondi</h1>
       <div class="header-meta">
         <span id="data-aggiornamento" class="badge-data">--</span>
-        <button class="btn-primary" onclick="refreshNav()">&#8635; Aggiorna i valori</button>
+        <button class="btn-primary" onclick="loadNav()">&#8635; Aggiorna i valori</button>
         <button class="btn-secondary" onclick="openModalNav()">Aggiorna NAV</button>
-        <button id="btn-aggiorna-web" class="btn-secondary" onclick="triggerNavUpdate()">&#x1F504; Aggiorna da web</button>
       </div>
     </div>
   </header>
@@ -52,16 +51,16 @@
           <thead>
             <tr>
               <th>Fondo</th>
-                <th>ISIN</th>
-                <th class="num">Carico</th>
-                <th class="num">NAV Att.</th>
-                <th class="num">Quote</th>
-                <th class="num">Costo Stor.</th>
-                <th class="num">Controvalore</th>
-                <th class="num">P&amp;L</th>
-                <th class="num">Var.%</th>
-               <th class="num">Peso</th>
-                <th class="num">Contributo</th>
+              <th>ISIN</th>
+              <th class="num">Carico</th>
+              <th class="num">NAV Att.</th>
+              <th class="num">Quote</th>
+              <th class="num">Costo Stor.</th>
+              <th class="num">Controvalore</th>
+              <th class="num">P&amp;L</th>
+              <th class="num">Var.%</th>
+              <th class="num">Peso</th>
+              <th class="num">Contributo</th>
             </tr>
           </thead>
           <tbody id="tbody-fondi">
