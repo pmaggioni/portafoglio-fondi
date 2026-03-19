@@ -1,10 +1,4 @@
 // ============================================================
-// TOKEN GitHub per il trigger del workflow via API
-// ⚠️  NON committare con il token reale — usare PLACEHOLDER
-// ============================================================
-const TOKEN = 'PLACEHOLDER'; // sostituisci con il tuo GitHub PAT (scope: repo o workflow)
-
-// ============================================================
 // Dati statici del portafoglio
 // ============================================================
 const FONDI = [
@@ -33,10 +27,11 @@ let chartVar  = null;
 
 // NAV correnti (aggiornabili via modal)
 let navCorrente = {};
+
 // ============================================================
 // Calcola tutti i valori derivati
-// calcAll(navMap) -> { fondi: [...], totali: {...}, ac: [...] }
-// navMap: { isin -> { navAtt, errore } }
+// calcAll(navMap) → { fondi: [...], totali: {...}, ac: [...] }
+// navMap: { isin → { navAtt, errore } }
 // DEVE essere definita PRIMA di initCharts()
 // ============================================================
 function calcAll(navMap) {
@@ -63,11 +58,11 @@ function calcAll(navMap) {
   }));
 
   const ac = AC_DEF.map(a => {
-    const ff       = a.idxs.map(i => fondiFinale[i]);
-    const costo    = ff.reduce((s, f) => s + f.costoStor, 0);
-    const contro   = ff.reduce((s, f) => s + f.contro,    0);
-    const pnl      = contro - costo;
-    const peso     = totContro > 0 ? contro / totContro : 0;
+    const ff     = a.idxs.map(i => fondiFinale[i]);
+    const costo  = ff.reduce((s, f) => s + f.costoStor, 0);
+    const contro = ff.reduce((s, f) => s + f.contro,    0);
+    const pnl    = contro - costo;
+    const peso   = totContro > 0 ? contro / totContro : 0;
     return { nome: a.nome, costo, contro, pnl, peso };
   });
 
@@ -88,6 +83,7 @@ function pct(v) {
 function cls(v) {
   return v >= 0 ? 'pos' : 'neg';
 }
+
 // ============================================================
 // Render card riepilogo
 // ============================================================
@@ -96,12 +92,12 @@ function renderCards(totali) {
   document.getElementById('card-costo').textContent        = eur(totali.totCosto);
 
   const cardPnl = document.getElementById('card-pnl');
-  cardPnl.textContent  = eur(totali.totPnl);
-  cardPnl.className    = 'card-value ' + cls(totali.totPnl);
+  cardPnl.textContent = eur(totali.totPnl);
+  cardPnl.className   = 'card-value ' + cls(totali.totPnl);
 
   const cardPct = document.getElementById('card-pct');
-  cardPct.textContent  = pct(totali.totVarPct);
-  cardPct.className    = 'card-value ' + cls(totali.totVarPct);
+  cardPct.textContent = pct(totali.totVarPct);
+  cardPct.className   = 'card-value ' + cls(totali.totVarPct);
 }
 
 // ============================================================
@@ -145,17 +141,17 @@ function renderAC(ac) {
     </tr>
   `).join('');
 }
+
 // ============================================================
 // Inizializza / aggiorna grafici Chart.js
-// DEVE essere definita DOPO calcAll()
 // ============================================================
 function initCharts(fondi) {
   if (typeof Chart === 'undefined') return;
 
-  const nomi  = fondi.map(f => f.nome.length > 28 ? f.nome.slice(0, 27) + '…' : f.nome);
-  const pesi  = fondi.map(f => +(f.peso * 100).toFixed(2));
-  const pnls  = fondi.map(f => +f.pnl.toFixed(2));
-  const vars  = fondi.map(f => +(f.varPct * 100).toFixed(2));
+  const nomi = fondi.map(f => f.nome.length > 28 ? f.nome.slice(0, 27) + '…' : f.nome);
+  const pesi = fondi.map(f => +(f.peso * 100).toFixed(2));
+  const pnls = fondi.map(f => +f.pnl.toFixed(2));
+  const vars = fondi.map(f => +(f.varPct * 100).toFixed(2));
 
   const bgPnl = pnls.map(v => v >= 0 ? 'rgba(34,197,94,0.75)' : 'rgba(239,68,68,0.75)');
   const bgVar = vars.map(v => v >= 0 ? 'rgba(34,197,94,0.75)' : 'rgba(239,68,68,0.75)');
@@ -168,7 +164,7 @@ function initCharts(fondi) {
     },
   };
 
-  // --- Grafico donut peso ---
+  // Grafico donut peso
   if (!chartPeso) {
     chartPeso = new Chart(document.getElementById('chartPeso'), {
       type: 'doughnut',
@@ -181,8 +177,7 @@ function initCharts(fondi) {
         cutout: '65%',
         plugins: {
           legend: {
-            display: true,
-            position: 'bottom',
+            display: true, position: 'bottom',
             labels: { color: '#8892a4', font: { size: 11 }, boxWidth: 12, padding: 10 },
           },
           tooltip: {
@@ -198,16 +193,14 @@ function initCharts(fondi) {
     chartPeso.update();
   }
 
-  // --- Grafico barre P&L ---
+  // Grafico barre P&L
   const optsBar = {
     ...defaultOpts,
     indexAxis: 'y',
     responsive: true,
     plugins: {
       ...defaultOpts.plugins,
-      tooltip: {
-        callbacks: { label: ctx => ' ' + eur(ctx.parsed.x) },
-      },
+      tooltip: { callbacks: { label: ctx => ' ' + eur(ctx.parsed.x) } },
     },
     scales: {
       x: { ...defaultOpts.scales.x },
@@ -218,10 +211,7 @@ function initCharts(fondi) {
   if (!chartPnl) {
     chartPnl = new Chart(document.getElementById('chartPnl'), {
       type: 'bar',
-      data: {
-        labels: nomi,
-        datasets: [{ data: pnls, backgroundColor: bgPnl, borderRadius: 4 }],
-      },
+      data: { labels: nomi, datasets: [{ data: pnls, backgroundColor: bgPnl, borderRadius: 4 }] },
       options: optsBar,
     });
   } else {
@@ -230,14 +220,11 @@ function initCharts(fondi) {
     chartPnl.update();
   }
 
-  // --- Grafico barre variazione % ---
+  // Grafico barre variazione %
   if (!chartVar) {
     chartVar = new Chart(document.getElementById('chartVar'), {
       type: 'bar',
-      data: {
-        labels: nomi,
-        datasets: [{ data: vars, backgroundColor: bgVar, borderRadius: 4 }],
-      },
+      data: { labels: nomi, datasets: [{ data: vars, backgroundColor: bgVar, borderRadius: 4 }] },
       options: {
         ...optsBar,
         plugins: {
@@ -254,6 +241,7 @@ function initCharts(fondi) {
     chartVar.update();
   }
 }
+
 // ============================================================
 // Aggiorna tutta la UI con un navMap
 // ============================================================
@@ -266,35 +254,35 @@ function aggiornaUI(navMap) {
 }
 
 // ============================================================
-// Carica nav.json (con cache-busting) e popola la UI
+// Carica nav.json e aggiorna la UI
+// Chiamata al caricamento pagina e dal bottone "Aggiorna i valori"
 // ============================================================
 async function loadNav() {
+  const btnEl  = document.querySelector('.btn-primary');
+  const dataEl = document.getElementById('data-aggiornamento');
+
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳ Caricamento...'; }
+
   try {
-    const ts  = Date.now();
-    const res = await fetch(`nav.json?v=${ts}`);
+    const res = await fetch(`nav.json?v=${Date.now()}`);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
-    // Costruisce navMap da nav.json
+    // Aggiorna navCorrente da nav.json
     data.fondi.forEach(f => { navCorrente[f.isin] = { navAtt: f.navAtt, errore: f.errore }; });
 
-    // Aggiorna badge data
-    if (data.aggiornato) {
-      const d = new Date(data.aggiornato);
-      document.getElementById('data-aggiornamento').textContent =
-        'Aggiornato: ' + d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    }
+    // Mostra data/ora del click come richiesto
+    dataEl.textContent = 'Aggiornato: ' + new Date().toLocaleString('it-IT');
+
   } catch {
-    // Fallback: usa carico come navAtt per tutti i fondi
+    // Fallback: usa il carico come NAV
     FONDI.forEach(f => { navCorrente[f.isin] = { navAtt: f.carico, errore: false }; });
-    document.getElementById('data-aggiornamento').textContent = 'Dati default (nav.json non disponibile)';
+    dataEl.textContent = 'Dati default (nav.json non disponibile)';
   }
 
   aggiornaUI(navCorrente);
+  if (btnEl) { btnEl.disabled = false; btnEl.textContent = '↻ Aggiorna i valori'; }
 }
-
-// Alias usato da triggerNavUpdate() per rileggere nav.json dopo il workflow
-const loadNavFromJson = loadNav;
 
 // ============================================================
 // Modal aggiornamento NAV manuale
@@ -328,101 +316,6 @@ function applicaNavManuale() {
   });
   closeModalNav();
   aggiornaUI(navCorrente);
-}
-
-
-// ============================================================
-// Refresh manuale NAV (chiamato dal bottone "↻ Aggiorna i valori")
-// Mostra ora del click nel badge e messaggio di conferma
-// ============================================================
-async function refreshNav() {
-  const badgeEl = document.getElementById('data-aggiornamento');
-  badgeEl.textContent = 'Aggiornamento in corso...';
-
-  try {
-    const ts = Date.now();
-    const res = await fetch(`nav.json?v=${ts}`);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-
-    // Aggiorna navCorrente
-    navCorrente = {};
-    data.fondi.forEach(f => {
-      navCorrente[f.isin] = { navAtt: f.navAtt, errore: f.errore };
-    });
-    aggiornaUI(navCorrente);
-
-    // Badge: ora del click
-    const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    badgeEl.textContent = 'Aggiornato alle ' + ora;
-
-    // Messaggio temporaneo di conferma
-    const msg = document.createElement('span');
-    msg.id = 'refresh-msg';
-    msg.textContent = ' ✓ Dati aggiornati correttamente';
-    msg.style.cssText = 'color:#22c55e;font-size:12px;margin-left:8px;';
-    // Rimuovi eventuale messaggio precedente
-    const old = document.getElementById('refresh-msg');
-    if (old) old.remove();
-    badgeEl.insertAdjacentElement('afterend', msg);
-    setTimeout(() => msg.remove(), 4000);
-
-  } catch (err) {
-    badgeEl.textContent = 'Errore aggiornamento';
-    console.error('refreshNav error:', err);
-  }
-}
-
-// ============================================================
-// Trigger workflow GitHub Actions "Aggiorna NAV" via API
-// Dopo 15 secondi richiama loadNavFromJson() per rileggere nav.json
-// ============================================================
-async function triggerNavUpdate() {
-  const badgeEl = document.getElementById('data-aggiornamento');
-  const btnAggiorna = document.getElementById('btn-aggiorna-web');
-
-  // Controllo token
-  if (!TOKEN || TOKEN === 'PLACEHOLDER') {
-    alert('⚠️ TOKEN non configurato. Sostituisci PLACEHOLDER in app.js con il tuo GitHub PAT.');
-    return;
-  }
-
-  // Disabilita bottone e mostra messaggio di attesa
-  if (btnAggiorna) btnAggiorna.disabled = true;
-  badgeEl.textContent = '⏳ Aggiornamento in corso...';
-
-  try {
-    // Chiama l'API GitHub Actions per triggerare il workflow update_nav.yml
-    const res = await fetch(
-      'https://api.github.com/repos/pmaggioni/portafoglio-fondi/actions/workflows/update_nav.yml/dispatches',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + TOKEN,
-          'Accept': 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ref: 'main' }),
-      }
-    );
-
-    if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error('GitHub API ' + res.status + ': ' + errBody);
-    }
-
-    // Workflow avviato -- attendi 15 secondi poi rileggi nav.json
-    setTimeout(async () => {
-      await loadNavFromJson();
-      if (btnAggiorna) btnAggiorna.disabled = false;
-    }, 15000);
-
-  } catch (err) {
-    badgeEl.textContent = 'Errore trigger workflow';
-    if (btnAggiorna) btnAggiorna.disabled = false;
-    console.error('triggerNavUpdate error:', err);
-  }
 }
 
 // ============================================================
