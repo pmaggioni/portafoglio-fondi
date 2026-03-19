@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Fondi</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>
 </head>
 <body>
 
@@ -15,8 +15,9 @@
       <h1 class="header-title">Portafoglio Fondi</h1>
       <div class="header-meta">
         <span id="data-aggiornamento" class="badge-data">--</span>
-        <button class="btn-primary" onclick="refreshNav()">↻ Aggiorna i valori</button>
+        <button class="btn-primary" onclick="refreshNav()">&#8635; Aggiorna i valori</button>
         <button class="btn-secondary" onclick="openModalNav()">Aggiorna NAV</button>
+        <button id="btn-aggiorna-web" class="btn-secondary" onclick="triggerNavUpdate()">&#x1F504; Aggiorna da web</button>
       </div>
     </div>
   </header>
@@ -34,7 +35,7 @@
         <div class="card-value" id="card-costo">—</div>
       </div>
       <div class="card">
-        <div class="card-label">P&L Totale</div>
+        <div class="card-label">P&amp;L Totale</div>
         <div class="card-value" id="card-pnl">—</div>
       </div>
       <div class="card">
@@ -51,16 +52,16 @@
           <thead>
             <tr>
               <th>Fondo</th>
-              <th>ISIN</th>
-              <th class="num">Carico</th>
-              <th class="num">NAV Att.</th>
-              <th class="num">Quote</th>
-              <th class="num">Costo Stor.</th>
-              <th class="num">Controvalore</th>
-              <th class="num">P&L</th>
-              <th class="num">Var.%</th>
-              <th class="num">Peso</th>
-              <th class="num">Contributo</th>
+                <th>ISIN</th>
+                <th class="num">Carico</th>
+                <th class="num">NAV Att.</th>
+                <th class="num">Quote</th>
+                <th class="num">Costo Stor.</th>
+                <th class="num">Controvalore</th>
+                <th class="num">P&amp;L</th>
+                <th class="num">Var.%</th>
+               <th class="num">Peso</th>
+                <th class="num">Contributo</th>
             </tr>
           </thead>
           <tbody id="tbody-fondi">
@@ -80,7 +81,7 @@
               <th>Classe</th>
               <th class="num">Costo Stor.</th>
               <th class="num">Controvalore</th>
-              <th class="num">P&L</th>
+              <th class="num">P&amp;L</th>
               <th class="num">Peso</th>
             </tr>
           </thead>
@@ -102,7 +103,7 @@
           </div>
         </div>
         <div class="chart-card">
-          <h3 class="chart-title">P&L per Fondo (€)</h3>
+          <h3 class="chart-title">P&amp;L per Fondo (€)</h3>
           <canvas id="chartPnl"></canvas>
         </div>
         <div class="chart-card">
@@ -132,6 +133,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js"><\/script>
 </body>
 </html>
