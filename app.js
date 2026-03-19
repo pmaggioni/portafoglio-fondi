@@ -1,4 +1,10 @@
 // ============================================================
+// TOKEN GitHub per il trigger del workflow via API
+// ⚠️  NON committare con il token reale — usare PLACEHOLDER
+// ============================================================
+const TOKEN = 'PLACEHOLDER'; // sostituisci con il tuo GitHub PAT (scope: repo o workflow)
+
+// ============================================================
 // Dati statici del portafoglio
 // ============================================================
 const FONDI = [
@@ -27,11 +33,10 @@ let chartVar  = null;
 
 // NAV correnti (aggiornabili via modal)
 let navCorrente = {};
-
 // ============================================================
 // Calcola tutti i valori derivati
-// calcAll(navMap) → { fondi: [...], totali: {...}, ac: [...] }
-// navMap: { isin → { navAtt, errore } }
+// calcAll(navMap) -> { fondi: [...], totali: {...}, ac: [...] }
+// navMap: { isin -> { navAtt, errore } }
 // DEVE essere definita PRIMA di initCharts()
 // ============================================================
 function calcAll(navMap) {
@@ -83,7 +88,6 @@ function pct(v) {
 function cls(v) {
   return v >= 0 ? 'pos' : 'neg';
 }
-
 // ============================================================
 // Render card riepilogo
 // ============================================================
@@ -141,7 +145,6 @@ function renderAC(ac) {
     </tr>
   `).join('');
 }
-
 // ============================================================
 // Inizializza / aggiorna grafici Chart.js
 // DEVE essere definita DOPO calcAll()
@@ -251,7 +254,6 @@ function initCharts(fondi) {
     chartVar.update();
   }
 }
-
 // ============================================================
 // Aggiorna tutta la UI con un navMap
 // ============================================================
@@ -290,6 +292,9 @@ async function loadNav() {
 
   aggiornaUI(navCorrente);
 }
+
+// Alias usato da triggerNavUpdate() per rileggere nav.json dopo il workflow
+const loadNavFromJson = loadNav;
 
 // ============================================================
 // Modal aggiornamento NAV manuale
@@ -365,6 +370,58 @@ async function refreshNav() {
   } catch (err) {
     badgeEl.textContent = 'Errore aggiornamento';
     console.error('refreshNav error:', err);
+  }
+}
+
+// ============================================================
+// Trigger workflow GitHub Actions "Aggiorna NAV" via API
+// Dopo 15 secondi richiama loadNavFromJson() per rileggere nav.json
+// ============================================================
+async function triggerNavUpdate() {
+  const badgeEl = document.getElementById('data-aggiornamento');
+  const btnAggiorna = document.getElementById('btn-aggiorna-web');
+
+  // Controllo token
+  if (!TOKEN || TOKEN === 'PLACEHOLDER') {
+    alert('⚠️ TOKEN non configurato. Sostituisci PLACEHOLDER in app.js con il tuo GitHub PAT.');
+    return;
+  }
+
+  // Disabilita bottone e mostra messaggio di attesa
+  if (btnAggiorna) btnAggiorna.disabled = true;
+  badgeEl.textContent = '⏳ Aggiornamento in corso...';
+
+  try {
+    // Chiama l'API GitHub Actions per triggerare il workflow update_nav.yml
+    const res = await fetch(
+      'https://api.github.com/repos/pmaggioni/portafoglio-fondi/actions/workflows/update_nav.yml/dispatches',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + TOKEN,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ref: 'main' }),
+      }
+    );
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error('GitHub API ' + res.status + ': ' + errBody);
+    }
+
+    // Workflow avviato -- attendi 15 secondi poi rileggi nav.json
+    setTimeout(async () => {
+      await loadNavFromJson();
+      if (btnAggiorna) btnAggiorna.disabled = false;
+    }, 15000);
+
+  } catch (err) {
+    badgeEl.textContent = 'Errore trigger workflow';
+    if (btnAggiorna) btnAggiorna.disabled = false;
+    console.error('triggerNavUpdate error:', err);
   }
 }
 
