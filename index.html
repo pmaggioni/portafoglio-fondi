@@ -1,128 +1,105 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Portafoglio Fondi — Paolo</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafoglio Fondi — Paolo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
 <body>
 
-    <!-- Header -->
-    <header class="header">
-          <div class="header-left">
-                  <h1 class="header-title">Portafoglio Fondi &mdash; Paolo</h1>h1>
-                  <div class="header-subtitle">Aggiornamento manuale NAV giornaliero &middot; <span id="data-aggiornamento">--</span>span></div>div>
-          </div>div>
-          <div class="header-actions">
-                  <button class="btn-nav" onclick="openModalNav()">&#9998; Aggiorna NAV</button>button>
-                  <button class="btn-ricalcola" onclick="loadNav()">&#8635; Ricalcola</button>button>
-          </div>div>
-    </header>header>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1 class="header-title">Portafoglio Fondi — Paolo</h1>
+      <div class="header-subtitle">Aggiornamento manuale NAV giornaliero · <span id="data-aggiornamento">--</span></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-nav" onclick="openModalNav()">✎ Aggiorna NAV</button>
+      <button class="btn-ricalcola" onclick="loadNav()">↻ Ricalcola</button>
+    </div>
+  </header>
 
-    <main class="main">
+  <main class="main">
+    <section class="cards-grid" id="cards-grid">
+      <div class="card">
+        <div class="card-label">CONTROVALORE TOTALE</div>
+        <div class="card-value" id="card-controvalore">—</div>
+        <div class="card-sub" id="card-nfondi">-- fondi</div>
+      </div>
+      <div class="card">
+        <div class="card-label">COSTO STORICO</div>
+        <div class="card-value" id="card-costo">—</div>
+        <div class="card-sub">investito totale</div>
+      </div>
+      <div class="card">
+        <div class="card-label">P&amp;L TOTALE</div>
+        <div class="card-value" id="card-pnl">—</div>
+        <div class="card-sub" id="card-pct">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">FONDO MIGLIORE</div>
+        <div class="card-value card-fondo-migliore" id="card-fondo-migliore">—</div>
+        <div class="card-sub" id="card-fondo-migliore-pct">—</div>
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="section-title">DETTAGLIO FONDI</h2>
+      <div class="table-wrap">
+        <table class="table" id="tabella-fondi">
+          <thead>
+            <tr>
+              <th>FONDO</th><th>CLASSE</th>
+              <th class="num">NAV CARICO</th><th class="num">NAV ATTUALE</th>
+              <th class="num">N QUOTE</th><th class="num">COSTO STORICO</th>
+              <th class="num">CONTROVALORE</th><th class="num">P&amp;L</th>
+              <th class="num">VAR. %</th><th class="num">PESO %</th>
+              <th class="num">CONTRIBUTO RENDIM.</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-fondi">
+            <tr><td colspan="11" class="loading">Caricamento...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="section">
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">PESO PER FONDO (%)</h3>
+          <div class="chart-donut-wrap"><canvas id="chartPeso"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">P&amp;L PER FONDO</h3>
+          <canvas id="chartPnl"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">VARIAZIONE % DAL CARICO</h3>
+          <canvas id="chartVar"></canvas>
+        </div>
+      </div>
+    </section>
+    <section class="ac-cards-grid" id="ac-cards-grid"></section>
+  </main>
 
-          <!-- Card riepilogo -->
-          <section class="cards-grid" id="cards-grid">
-                  <div class="card">
-                            <div class="card-label">CONTROVALORE TOTALE</div>div>
-                            <div class="card-value" id="card-controvalore">—</div>div>
-                            <div class="card-sub" id="card-nfondi">-- fondi</div>div>
-                  </div>div>
-                  <div class="card">
-                            <div class="card-label">COSTO STORICO</div>div>
-                            <div class="card-value" id="card-costo">—</div>div>
-                            <div class="card-sub">investito totale</div>div>
-                  </div>div>
-                  <div class="card">
-                            <div class="card-label">P&amp;L TOTALE</div>div>
-                            <div class="card-value" id="card-pnl">—</div>div>
-                            <div class="card-sub" id="card-pct">—</div>div>
-                  </div>div>
-                  <div class="card">
-                            <div class="card-label">FONDO MIGLIORE</div>div>
-                            <div class="card-value card-fondo-migliore" id="card-fondo-migliore">—</div>div>
-                            <div class="card-sub" id="card-fondo-migliore-pct">—</div>div>
-                  </div>div>
-          </section>section>
-
-          <!-- Tabella fondi -->
-          <section class="section">
-                  <h2 class="section-title">DETTAGLIO FONDI</h2>h2>
-                  <div class="table-wrap">
-                            <table class="table" id="tabella-fondi">
-                                        <thead>
-                                                      <tr>
-                                                                      <th>FONDO</th>
-                                                      <th>CLASSE</th>
-                                                      <th class="num">NAV CARICO (€)</th>
-                                                      <th class="num">NAV ATTUALE (€)</th>
-                                                      <th class="num">N° QUOTE</th>
-                                                      <th class="num">COSTO STORICO (€)</th>
-                                                      <th class="num">CONTROVALORE (€)</th>
-                                                      <th class="num">P&amp;L (€)</th>
-                                                      <th class="num">VAR. %</th>
-                                                      <th class="num">PESO %</th>
-                                                      <th class="num">CONTRIBUTO RENDIM.</th>
-                                                      </tr>
-                                        </thead>
-                                      <tbody id="tbody-fondi">
-                                        <tr><td colspan="11" class="loading">Caricamento dati...</td>td></tr>
-                                      </tbody>tbody>
-                            </table>table>
-                  </div>div>
-          </section>section>
-    
-        <!-- Grafici + Card Asset Class -->
-        <section class="section">
-              <div class="charts-grid">
-                      <div class="chart-card">
-                                <h3 class="chart-title">PESO PER FONDO (%)</h3>h3>
-                                <div class="chart-donut-wrap">
-                                            <canvas id="chartPeso"></canvas>canvas>
-                                </div>div>
-                      </div>div>
-                      <div class="chart-card">
-                                <h3 class="chart-title">P&amp;L PER FONDO (€)</h3>h3>
-                                <canvas id="chartPnl"></canvas>canvas>
-                      </div>div>
-                      <div class="chart-card">
-                                <h3 class="chart-title">VARIAZIONE % DAL CARICO</h3>h3>
-                                <canvas id="chartVar"></canvas>canvas>
-                      </div>div>
-              </div>div>
-        </section>section>
-    
-        <!-- Card Asset Class -->
-        <section class="ac-cards-grid" id="ac-cards-grid">
-              <!-- Populated by JS -->
-        </section>section>
-    
-    </main>main>
-
-  <!-- Modal aggiorna NAV manuale -->
   <div class="modal-overlay" id="modal-overlay" onclick="closeModalNav()">
-      <div class="modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                    <h2>Aggiorna NAV</h2>
-                    <button class="modal-close" onclick="closeModalNav()">&times;</button>button>
-            </div>div>
-            <div class="modal-body">
-                    <p class="modal-note">Override manuale dei NAV per questa sessione. Non modifica nav.json.</p>p>
-                    <div id="modal-inputs"></div>div>
-            </div>div>
-            <div class="modal-footer">
-                    <button class="btn-secondary" onclick="closeModalNav()">Annulla</button>button>
-                    <button class="btn-primary" onclick="applicaNavManuale()">Applica</button>button>
-            </div>div>
-      </div>div>
-  </div>div>
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Aggiorna NAV</h2>
+        <button class="modal-close" onclick="closeModalNav()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Override manuale dei NAV per questa sessione.</p>
+        <div id="modal-inputs"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModalNav()">Annulla</button>
+        <button class="btn-primary" onclick="applicaNavManuale()">Applica</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
-</html>html></h2></tr></th></th>
-                                                      </tr>
-                                        </thead>
-</body></title>
-  </head>
+</html>
