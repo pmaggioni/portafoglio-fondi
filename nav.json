@@ -1,35 +1,35 @@
 {
-  "aggiornato": "2026-03-30T11:05:55Z",
-  "aggiornato_it": "30/03/2026 11:05",
+  "aggiornato": "2026-03-31T08:29:05Z",
+  "aggiornato_it": "31/03/2026 08:29",
   "fondi": [
     {
       "nome": "Lux Im Intermonte PIR Ita SmallMid",
       "isin": "LU1698605562",
-      "navAtt": 141.668,
+      "navAtt": 140.961,
       "errore": false
     },
     {
       "nome": "Lux Im Goldman Sachs Global Eq Op",
       "isin": "LU1881760893",
-      "navAtt": 174.02,
+      "navAtt": 171.321,
       "errore": false
     },
     {
       "nome": "Lux Im Blackrock Credit Defensive St",
       "isin": "LU0894903326",
-      "navAtt": 103.616,
+      "navAtt": 103.271,
       "errore": false
     },
     {
       "nome": "Ff World Fund E Acc Euro",
       "isin": "LU0115769746",
-      "navAtt": 51.33,
+      "navAtt": 51.65,
       "errore": false
     },
     {
       "nome": "Eurizon Az.Internaz.Etico",
       "isin": "IT0001083424",
-      "navAtt": 21.449,
+      "navAtt": 21.18,
       "errore": false
     }
   ],
