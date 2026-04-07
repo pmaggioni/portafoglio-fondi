@@ -1,6 +1,6 @@
 {
-  "aggiornato": "2026-04-06T11:01:07Z",
-  "aggiornato_it": "06/04/2026 11:01",
+  "aggiornato": "2026-04-07T09:44:49Z",
+  "aggiornato_it": "07/04/2026 09:44",
   "fondi": [
     {
       "nome": "Lux Im Intermonte PIR Ita SmallMid",
@@ -23,8 +23,8 @@
     {
       "nome": "Ff World Fund E Acc Euro",
       "isin": "LU0115769746",
-      "navAtt": 53.11,
-      "errore": true
+      "navAtt": 53.42,
+      "errore": false
     },
     {
       "nome": "Eurizon Az.Internaz.Etico",
@@ -33,7 +33,5 @@
       "errore": false
     }
   ],
-  "errori": [
-    "Ff World Fund E Acc Euro"
-  ]
+  "errori": []
 }
