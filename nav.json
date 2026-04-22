@@ -1,6 +1,6 @@
 {
-  "aggiornato": "2026-04-22T09:56:41Z",
-  "aggiornato_it": "22/04/2026 09:56",
+  "aggiornato": "2026-04-22T11:09:30Z",
+  "aggiornato_it": "22/04/2026 11:09",
   "fondi": [
     {
       "nome": "Lux Im Intermonte PIR Ita SmallMid",
@@ -18,7 +18,7 @@
       "nome": "Lux Im Blackrock Credit Defensive St",
       "isin": "LU0894903326",
       "navAtt": 103.62,
-      "errore": true
+      "errore": false
     },
     {
       "nome": "Ff World Fund E Acc Euro",
@@ -34,7 +34,6 @@
     }
   ],
   "errori": [
-    "Lux Im Blackrock Credit Defensive St",
     "Ff World Fund E Acc Euro",
     "Eurizon Az.Internaz.Etico"
   ]
